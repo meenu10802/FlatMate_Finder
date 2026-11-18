@@ -164,7 +164,13 @@ Keep scoring pure (no DB calls) so it is unit-testable.
   - A flatmate's position is their area centre, or their city centre if they have no area.
   - The distance is computed **in MySQL with Haversine** (`models/flatmateModel.js`, R = 6371 km, `ASIN(LEAST(1, SQRT(…)))`), after a lat/lng bounding-box pre-filter. `services/locationService.js#haversineKm` is the JS mirror, and a test asserts they agree for all 21×21 area pairs. Keep the two in sync.
   - Uses `pool.query`, not `execute`, because mysql2 prepared statements reject numeric LIMIT params on MySQL 8.0.22+.
-- Matches (planned, Phase 5): extend `/flatmates` with preference filters (`smoking&pets&parties&budgetMax&moveInBefore&minScore&sort`) and add `score` + `breakdown` per result, rather than adding a separate `/matches` endpoint.
+- Matches (built, Phase 4b + 5): `/flatmates` also takes the preference filters `smoking`, `pets`, `parties` (comma lists, "any of"), `budgetMax` (candidate `budget_min ≤ X`), `moveInBefore` (date), `hasRoom` (true/false), plus `minScore` (0–100) and `sort=match|distance|moveIn` (default `match`). There is no separate `/matches` endpoint.
+  - Each result gets `score` + `breakdown[{ factor, label, score, weight, points, status, detail }]` from `services/matchService.js` (pure, unit-tested).
+  - Location scoring uses the distance between the **viewer's own** area/city centre and the candidate, not the search origin.
+  - Scores are computed in JS, so the SQL returns every filtered candidate within the radius (capped at `MAX_CANDIDATES` = 500). The route then scores, applies `minScore`, sorts and paginates. Move scoring into SQL if the data ever outgrows the cap.
+  - `GET /profiles/:userId` returns `{ profile, match }`.
+  - Coordinates for scoring come from `toProfileWithCoords` and must never be sent to clients.
+- Client: filter state ↔ URL ↔ API mapping lives in `lib/browseFilters.js`. The UI is `PreferenceFilters`, active-filter chips, `BreakdownChips` on cards, and the `MatchBreakdown` panel on profiles. The score ring stays grayscale; colour appears only in the status badges.
 - Connections (built): `GET /connections` → `{ incoming, outgoing, accepted }`; `GET /connections/with/:userId` → `{ connection | null }`; `POST /connections` `{ addresseeId }`; `PATCH /connections/:id` `{ status: accepted|declined }` (addressee only, pending only).
 - Conversations (built; `:connectionId` = the accepted connection): `GET /conversations` (thread list with `lastMessage`, `unread`, `user.online`), `GET /conversations/:connectionId/messages?before&limit` (oldest→newest page + `hasMore`), `POST /conversations/:connectionId/messages` (REST fallback), `POST /conversations/:connectionId/read`.
 - **Socket.IO** (`server/src/sockets/index.js`): the handshake is authenticated with the same JWT cookie (`connect_error: UNAUTHENTICATED` otherwise), and each user joins room `user:<id>`.
@@ -236,7 +242,7 @@ Enforcement:
 
 ## 8. Roadmap
 
-Status (2026-11-18): phases 1–3 done, 4a (distance Browse) done, 6 (connections) and 7 (real-time inbox) done. Still to do: 4b preference filters, 5 match score, 8 polish.
+Status (2026-11-18): phases 1–7 done (incl. 4b filters + 5 match score). Remaining: 8 polish (mobile nav menu, empty states, a11y pass).
 
 1. **Scaffold** — client (Vite + Tailwind with restricted palette), server (Express, db pool, error handler), migrations + seeds.
 2. **Auth** — register/login/logout, JWT cookie, AuthContext, protected routes.

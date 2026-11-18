@@ -8,7 +8,7 @@ import ErrorState from '../components/layout/ErrorState.jsx';
 export default function ProfileView() {
   const { userId } = useParams();
   const { user } = useAuth();
-  const { data: profile, isLoading, error, refetch } = useProfile(userId);
+  const { data, isLoading, error, refetch } = useProfile(userId);
 
   if (user && Number(userId) === user.id) return <Navigate to="/me" replace />;
   if (isLoading) return <ProfileSkeleton />;
@@ -18,5 +18,5 @@ export default function ProfileView() {
       : <ErrorState message={error.message} onRetry={refetch} />;
   }
 
-  return <ProfileDetail profile={profile} actions={<ConnectButton userId={profile.userId} />} />;
+  return <ProfileDetail profile={data.profile} match={data.match} actions={<ConnectButton userId={data.profile.userId} />} />;
 }

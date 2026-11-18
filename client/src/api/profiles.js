@@ -3,7 +3,8 @@ import { api } from './client.js';
 import { ME_KEY } from '../context/AuthContext.jsx';
 
 export const fetchMyProfile = () => api.get('/profiles/me').then((r) => r.data.profile);
-export const fetchProfile = (userId) => api.get(`/profiles/${userId}`).then((r) => r.data.profile);
+/** Another user's profile → { profile, match } (match = score + breakdown vs. me, or null). */
+export const fetchProfile = (userId) => api.get(`/profiles/${userId}`).then((r) => r.data);
 export const saveMyProfile = (body) => api.put('/profiles/me', body).then((r) => r.data.profile);
 
 export const useMyProfile = () => useQuery({ queryKey: ['profile', 'me'], queryFn: fetchMyProfile });

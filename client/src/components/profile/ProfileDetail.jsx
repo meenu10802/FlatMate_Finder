@@ -2,6 +2,7 @@ import { BedDouble, CalendarDays, MapPin, Radius, Search, Wallet } from 'lucide-
 import Avatar from '../ui/Avatar.jsx';
 import Eyebrow from '../ui/Eyebrow.jsx';
 import StatusBadge from '../ui/StatusBadge.jsx';
+import MatchBreakdown from '../matches/MatchBreakdown.jsx';
 import { CLEANLINESS_LABELS, LIFESTYLE_FIELDS, optionFor } from '../../lib/constants.js';
 import { formatDate, formatINR, relativeDays } from '../../lib/format.js';
 
@@ -29,7 +30,8 @@ export function CleanlinessMeter({ level }) {
 }
 
 /** Full profile layout. `actions` renders in the header (Edit / Connect buttons). */
-export default function ProfileDetail({ profile: p, actions, isOwn = false }) {
+/** `match` ({ score, breakdown }) is shown as a "How you match" panel when viewing someone else. */
+export default function ProfileDetail({ profile: p, actions, isOwn = false, match = null }) {
   const location = [p.area?.name, p.city?.name].filter(Boolean).join(', ');
 
   return (
@@ -62,6 +64,16 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false }) {
       </section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        {/* Match */}
+        {match && (
+          <Panel className="lg:col-span-3">
+            <Eyebrow>How you match</Eyebrow>
+            <div className="mt-6">
+              <MatchBreakdown match={match} name={p.name} />
+            </div>
+          </Panel>
+        )}
+
         {/* Room on offer */}
         {p.hasRoom && (
           <Panel className="overflow-hidden !p-0 lg:col-span-3">

@@ -75,7 +75,7 @@ test('GET /flatmates: distances are within radius, sorted, 1 dp, and exact', asy
   if (!cookie) return t.skip('sample users not seeded — run npm run seed');
   const [velachery] = await query("SELECT id, lat, lng FROM areas WHERE name = 'Velachery'");
 
-  const res = await fetch(`${base}/flatmates?areaId=${velachery.id}&radiusKm=25`, { headers: { cookie } });
+  const res = await fetch(`${base}/flatmates?areaId=${velachery.id}&radiusKm=25&sort=distance`, { headers: { cookie } });
   assert.equal(res.status, 200);
   const body = await res.json();
   assert.equal(body.origin.name, 'Velachery');
@@ -120,4 +120,65 @@ test('GET /flatmates: validates radius and auth', async (t) => {
   if (!dbUp) return t.skip('database not available for origin checks');
   const res = await fetch(`${base}/flatmates`, { headers: { cookie } }); // user without a profile, no location given
   assert.equal((await res.json()).error.code, 'LOCATION_REQUIRED');
+});
+
+/* ── Phase 4b / 5: preference filters + match score ────────── */
+
+test('GET /flatmates: every result has a score + 7-factor breakdown; default sort is best match', async (t) => {
+  if (!dbUp) return t.skip('database not available');
+  const cookie = await sampleViewer();
+  if (!cookie) return t.skip('sample users not seeded');
+  const body = await (await fetch(`${base}/flatmates?radiusKm=25`, { headers: { cookie } })).json();
+  assert.equal(body.sort, 'match');
+  let prev = Infinity;
+  for (const f of body.flatmates) {
+    assert.ok(Number.isInteger(f.score) && f.score >= 0 && f.score <= 100);
+    assert.deepEqual(f.breakdown.map((b) => b.factor), ['budget', 'smoking', 'pets', 'parties', 'cleanliness', 'moveIn', 'location']);
+    assert.ok(f.breakdown.every((b) => ['match', 'partial', 'conflict'].includes(b.status) && typeof b.detail === 'string'));
+    assert.equal(f.score, Math.round(f.breakdown.reduce((s, b) => s + b.score * b.weight, 0)));
+    assert.ok(f.score <= prev, 'sorted by score desc');
+    assert.equal('coords' in f, false, 'internal coords not exposed');
+    prev = f.score;
+  }
+});
+
+test('GET /flatmates: preference filters and minScore narrow results', async (t) => {
+  if (!dbUp) return t.skip('database not available');
+  const cookie = await sampleViewer();
+  if (!cookie) return t.skip('sample users not seeded');
+  const get = async (qs) => (await (await fetch(`${base}/flatmates?cityId=1&radiusKm=25&${qs}`, { headers: { cookie } })).json());
+  const all = (await get('')).flatmates;
+  assert.ok(all.length >= 2, 'need Chennai sample data');
+
+  const pets = (await get('pets=yes,flexible')).flatmates;
+  assert.ok(pets.every((f) => ['yes', 'flexible'].includes(f.pets)));
+  assert.equal(pets.length, all.filter((f) => ['yes', 'flexible'].includes(f.pets)).length);
+
+  const cheap = (await get('budgetMax=11000')).flatmates;
+  assert.ok(cheap.every((f) => f.budgetMin <= 11000));
+
+  const soon = (await get('moveInBefore=2099-01-01')).flatmates;
+  assert.equal(soon.length, all.length);
+
+  const rooms = (await get('hasRoom=true')).flatmates;
+  assert.ok(rooms.every((f) => f.hasRoom));
+
+  const threshold = all[Math.floor(all.length / 2)].score;
+  const good = (await get(`minScore=${threshold}`)).flatmates;
+  assert.ok(good.length && good.every((f) => f.score >= threshold));
+
+  const bad = await (await fetch(`${base}/flatmates?cityId=1&smoking=sometimes`, { headers: { cookie } })).json();
+  assert.equal(bad.error.code, 'VALIDATION_ERROR');
+});
+
+test('GET /profiles/:id includes the match against the viewer', async (t) => {
+  if (!dbUp) return t.skip('database not available');
+  const cookie = await sampleViewer();
+  if (!cookie) return t.skip('sample users not seeded');
+  const [meera] = await query("SELECT id FROM users WHERE email = 'meera@sample.flatmatefinder.dev'");
+  const body = await (await fetch(`${base}/profiles/${meera.id}`, { headers: { cookie } })).json();
+  assert.equal(body.profile.name, 'Meera Krishnan');
+  assert.ok(body.match.score >= 0 && body.match.score <= 100);
+  assert.equal(body.match.breakdown.length, 7);
+  assert.equal('coords' in body.profile, false);
 });

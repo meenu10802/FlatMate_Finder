@@ -32,7 +32,7 @@ Flatmate Finder lets people build a lifestyle profile and get ranked against eve
 | 🏠 | **Lifestyle profiles** | Smoking (No / Yes / Flexible), Pets (No / Yes / Flexible), House parties (No / Occasionally / Flexible), Cleanliness (1–5), Budget range (₹), Move-in date |
 | 🛏️ | **Seeking vs. offering** | Mark whether you're looking for a place or have a room to share — with separate **person** and **room** photos and live previews |
 | 📍 | **Distance search** | 21 neighbourhoods with coordinates; Browse finds flatmates within 1–25 km using a Haversine query in MySQL and shows the exact distance (e.g. **2.1 km**) on every card |
-| 🎯 | **Match score** | Weighted 7-factor algorithm with a match / partial / conflict breakdown *(in progress)* |
+| 🎯 | **Match score** | Weighted 7-factor score (0–100) on every card, preference filter pills, sort by best match / nearest / soonest, and a “How you match” breakdown on profiles |
 | 🤝 | **Connections** | Send a request from any profile; accept or decline from the Connections page — messaging unlocks only once accepted |
 | 💬 | **Real-time inbox** | Socket.IO chat with online/offline dots (green / gray), typing indicator, unread badges, “Seen” receipts, optimistic sending and history paging |
 
@@ -209,13 +209,19 @@ Register and login are rate-limited to **20 requests / 15 min per IP**.
 
 | Method | Endpoint | Auth | Description |
 |---|---|:---:|---|
-| `GET` | `/flatmates` | ✓ | Active flatmates within a radius of a neighbourhood, nearest first, each with `distanceKm` |
+| `GET` | `/flatmates` | ✓ | Flatmates within a radius, filtered by preferences, each with `distanceKm`, a 0–100 `score` and a 7-factor `breakdown` |
 
 | Query param | Type | Default | Description |
 |---|---|---|---|
 | `areaId` | integer | your neighbourhood | Measure distance from this neighbourhood's centre |
 | `cityId` | integer | your city | Measure from the city centre (when no `areaId`) |
 | `radiusKm` | integer 1–25 | your profile radius | Maximum distance |
+| `smoking`, `pets`, `parties` | comma list | any | Only people with one of these values, e.g. `smoking=no,flexible` |
+| `budgetMax` | integer (₹) | any | Only people whose budget starts at or below this |
+| `moveInBefore` | `YYYY-MM-DD` | any | Only people moving in on or before this date |
+| `hasRoom` | `true` / `false` | any | Has a room to share / also looking |
+| `minScore` | integer 0–100 | — | Hide matches below this score |
+| `sort` | `match` · `distance` · `moveIn` | `match` | Result order |
 | `page`, `limit` | integer | `1`, `24` (max 50) | Pagination |
 
 <details>
@@ -226,10 +232,15 @@ Register and login are rate-limited to **20 requests / 15 min per IP**.
   "flatmates": [
     { "userId": 6, "name": "Ananya Rao", "age": 26, "area": { "id": 1, "name": "Adyar" }, "city": { "id": 1, "name": "Chennai" },
       "smoking": "no", "pets": "flexible", "parties": "occasionally", "cleanliness": 4,
-      "budgetMin": 15000, "budgetMax": 24000, "moveInDate": "2026-12-02", "hasRoom": true, "distanceKm": 5 }
+      "budgetMin": 15000, "budgetMax": 24000, "moveInDate": "2026-12-02", "hasRoom": true, "distanceKm": 5,
+      "score": 69,
+      "breakdown": [
+        { "factor": "budget", "label": "Budget", "score": 0.625, "weight": 20, "points": 12.5, "status": "partial", "detail": "Budgets overlap by ₹5,000" },
+        { "factor": "smoking", "label": "Smoking", "score": 1, "weight": 15, "points": 15, "status": "match", "detail": "You’re both smoke-free" }
+      ] }
   ],
   "origin": { "type": "area", "name": "Velachery", "lat": 12.9791, "lng": 80.2212 },
-  "radiusKm": 25, "page": 1, "limit": 24, "total": 2, "hasMore": false
+  "radiusKm": 25, "sort": "match", "page": 1, "limit": 24, "total": 2, "hasMore": false
 }
 ```
 
@@ -282,11 +293,6 @@ The socket authenticates with the same session cookie (unauthenticated connectio
 | server → client | `presence:update` | `{ userId, online }` | A connection came online / went offline |
 | server → client | `connection:update` | `{ id, status }` | A request was sent, accepted or declined |
 
-### Planned
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/flatmates` (extended) | Preference filters (`smoking`, `pets`, `parties`, `budgetMax`, `moveInBefore`) plus `score` + `breakdown` per result, `minScore` and `sort` |
 
 ## ✦ Architecture
 
@@ -353,8 +359,8 @@ Factors scoring ≥ 85% are a **match**, 35–85% **partial**, below 35% a **con
 - [x] **Phase 2** — Auth: register / login / logout, JWT cookie, protected routes
 - [x] **Phase 3** — Profiles: onboarding wizard, profile & edit pages, locations API, room listings
 - [x] **Phase 4a** — Browse page with Haversine distance search, location filter and radius slider (URL-synced)
-- [ ] **Phase 4b** — Preference filter pills (smoking, pets, parties, budget, move-in)
-- [ ] **Phase 5** — Match scoring service and the Browse page
+- [x] **Phase 4b** — Preference filter pills (smoking, pets, parties, budget, move-in, room, min match) with removable chips
+- [x] **Phase 5** — Match score (0–100) on every card and a “How you match” breakdown on profiles
 - [x] **Phase 6** — Connection requests (connect, accept / decline)
 - [x] **Phase 7** — Real-time inbox over Socket.IO: presence dots, typing, unread badges, read receipts
 - [ ] **Phase 8** — Polish: mobile navigation, empty states, accessibility pass

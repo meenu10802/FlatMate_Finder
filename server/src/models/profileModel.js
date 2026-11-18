@@ -1,7 +1,8 @@
 import { query } from '../config/db.js';
 
 const SELECT = `
-  SELECT p.*, u.name, c.name AS city_name, a.name AS area_name
+  SELECT p.*, u.name, c.name AS city_name, a.name AS area_name,
+         COALESCE(a.lat, c.lat) AS loc_lat, COALESCE(a.lng, c.lng) AS loc_lng
     FROM profiles p
     JOIN users u ON u.id = p.user_id
     LEFT JOIN cities c ON c.id = p.city_id
@@ -34,9 +35,16 @@ export function toProfile(r) {
   };
 }
 
-export async function findByUserId(userId, { activeOnly = false } = {}) {
+/** Internal-only: profile + `coords` (area centre, else city centre) for match scoring. Never send `coords` to clients. */
+export function toProfileWithCoords(r) {
+  const p = toProfile(r);
+  if (!p) return null;
+  return { ...p, coords: r.loc_lat == null ? null : { lat: Number(r.loc_lat), lng: Number(r.loc_lng) } };
+}
+
+export async function findByUserId(userId, { activeOnly = false, withCoords = false } = {}) {
   const rows = await query(`${SELECT} WHERE p.user_id = ?${activeOnly ? ' AND p.is_active = TRUE' : ''}`, [userId]);
-  return toProfile(rows[0]);
+  return withCoords ? toProfileWithCoords(rows[0]) : toProfile(rows[0]);
 }
 
 const COLUMNS = {
