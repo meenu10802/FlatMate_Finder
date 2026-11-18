@@ -5,3 +5,6 @@ dist/
 !.env.example
 *.log
 .DS_Store
+
+# Database backups contain password hashes and private messages — never commit them.
+server/backups/

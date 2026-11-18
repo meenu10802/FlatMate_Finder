@@ -7,6 +7,7 @@ const app = createApp();
 const server = http.createServer(app);
 await initSockets(server);
 
-server.listen(env.port, () => {
-  console.log(`API + Socket.IO listening on http://localhost:${env.port}`);
+// 0.0.0.0: hosting platforms (Render) route traffic to the container's external interface.
+server.listen(env.port, '0.0.0.0', () => {
+  console.log(`API + Socket.IO listening on port ${env.port}${env.isProd ? ' (production, serving client build)' : ''}`);
 });

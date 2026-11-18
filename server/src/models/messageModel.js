@@ -46,7 +46,11 @@ export async function markRead(connectionId, readerId) {
   return toIsoUtc(rows[0].t);
 }
 
-/** Inbox list: every accepted connection with the other person, last message and my unread count. */
+/**
+ * Inbox list: every accepted connection with the other person, last message and my unread count.
+ * Last-message ids and unread counts come from grouped derived tables rather than a subquery in an
+ * ON clause — TiDB (cloud DB) rejects `ON x = (SELECT …)` ("ON condition doesn't support subqueries yet").
+ */
 export async function listThreads(userId) {
   const rows = await query(
     `SELECT c.id AS connection_id, c.updated_at AS connected_at,
@@ -54,14 +58,18 @@ export async function listThreads(userId) {
             ar.name AS area_name, ci.name AS city_name,
             lm.id AS last_id, lm.sender_id AS last_sender_id, lm.body AS last_body,
             lm.created_at AS last_created_at, lm.read_at AS last_read_at,
-            (SELECT COUNT(*) FROM messages m
-              WHERE m.connection_id = c.id AND m.sender_id <> ? AND m.read_at IS NULL) AS unread
+            COALESCE(un.unread, 0) AS unread
        FROM connections c
        JOIN users o ON o.id = IF(c.requester_id = ?, c.addressee_id, c.requester_id)
        LEFT JOIN profiles p ON p.user_id = o.id
        LEFT JOIN areas ar ON ar.id = p.area_id
        LEFT JOIN cities ci ON ci.id = p.city_id
-       LEFT JOIN messages lm ON lm.id = (SELECT MAX(id) FROM messages WHERE connection_id = c.id)
+       LEFT JOIN (SELECT connection_id, MAX(id) AS last_id FROM messages GROUP BY connection_id) lx
+              ON lx.connection_id = c.id
+       LEFT JOIN messages lm ON lm.id = lx.last_id
+       LEFT JOIN (SELECT connection_id, COUNT(*) AS unread FROM messages
+                   WHERE sender_id <> ? AND read_at IS NULL GROUP BY connection_id) un
+              ON un.connection_id = c.id
       WHERE c.status = 'accepted' AND ? IN (c.requester_id, c.addressee_id)
       ORDER BY COALESCE(lm.created_at, c.updated_at) DESC`,
     [userId, userId, userId]

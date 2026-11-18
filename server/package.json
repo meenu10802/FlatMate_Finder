@@ -8,7 +8,9 @@
     "start": "node src/index.js",
     "migrate": "node db/migrate.js",
     "seed": "node db/seed.js",
-    "test": "node --test"
+    "test": "node --test --test-concurrency=1",
+    "backup": "node db/backup.js",
+    "restore": "node db/restore.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

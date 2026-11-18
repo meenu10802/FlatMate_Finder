@@ -222,7 +222,35 @@ Enforcement:
 - Motion: `animate-rise` for entering content, `animate-float` for showcase cards, `animate-marquee` for the neighbourhood band; all disabled under `prefers-reduced-motion`.
 - UI building blocks live in `components/ui/`: `Button`, `Card`, `Pill`, `Input`/`Field`, `Textarea`, `Slider`, `OptionCards`, `Avatar`, `Eyebrow`, `StatusBadge`.
 
-## 7. Conventions & Commands
+## 7. Deployment (production)
+
+- **Hosting:** the database is **TiDB Cloud Starter** (free, MySQL-compatible, TLS required) and the app is a **Render** free web service (`render.yaml` Blueprint, region Singapore).
+  - Aiven's free MySQL was rejected because it's retired on 21 Dec 2026 and its data deleted.
+  - The free Render service sleeps after 15 min idle, with about 1 min cold start. The user accepted this; there's no keep-awake pinger.
+- **One origin:** in production, `createApp()` serves `client/dist`, plus an SPA fallback for GET/HEAD requests that aren't `/api` or `/socket.io`, and sets `trust proxy`. The API, Socket.IO and the site share one host, so the cookie stays first-party, and `io()` and `/api` need no client config.
+- **Root `package.json`:**
+  - `npm run build` = server `npm ci --omit=dev` + client `npm ci --include=dev` + `vite build`. `--include=dev` is required because Render sets NODE_ENV=production, which would otherwise drop Vite.
+  - `npm start` = `node server/src/index.js`, listening on `0.0.0.0`.
+  - `.node-version` = 22.
+- **Env:**
+  - `DB_SSL=true` → mysql2 `ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true }`, using Node's CA bundle.
+  - `ENV_FILE` (default `.env`, a file name inside `/server`) lets local scripts target the cloud DB: `ENV_FILE=.env.cloud npm run migrate|seed|backup|restore|test`. Script connections print their target (`→ user@host:port/db (TLS) [file]`).
+  - On Render there's no env file; it uses dashboard env vars. `JWT_SECRET` is generated once by the Blueprint.
+- **TiDB compatibility rules (must hold for every new query or migration):**
+  1. **No MySQL 8.0.19 row aliases** (`INSERT … AS new … new.col`). TiDB parses them but never applies them (pingcap/tidb#70814). Use `ON DUPLICATE KEY UPDATE col = VALUES(col)`.
+  2. Any table whose **ids must increase with time** (ordering, `id < ?` paging, `MAX(id)`) needs the table option `/*T![auto_id_cache] AUTO_ID_CACHE=1 */` at CREATE time. TiDB otherwise allocates ids in per-node batches; MySQL ignores the comment. `messages` has it (migration 003).
+  3. **No subqueries in `ON` conditions.** TiDB returns "ON condition doesn't support subqueries yet". Use a grouped derived table instead (see `messageModel.listThreads`).
+  4. **One `ALTER TABLE` can't reference a column it adds** (e.g. `ADD a …, ADD b … AFTER a`). Split it into separate statements (see migration 002).
+  5. Every new migration must also be run against the cloud DB (`ENV_FILE=.env.cloud npm run migrate`), followed by the full suite: `ENV_FILE=.env.cloud npm test`. Verified 2026-11-18: 30/30 pass on TiDB v8.5.3 (instance in AWS Tokyo, ap-northeast-1).
+- **Latency-sensitive code:** TiDB takes about 300 ms per query from India, versus about 1 ms locally, which exposes races that local MySQL hides.
+  - In `sockets/index.js`, every `socket.on(...)` handler **must be registered synchronously, before any `await`**. Socket.IO drops events that arrive before their handler exists, and a message sent right after connecting was being lost. There's a regression test for this.
+  - Server tests run **one file at a time** (`node --test --test-concurrency=1`), because they share one real database and a parallel file's temporary users skewed the filter test.
+- **Backups:** `npm run backup` writes `server/backups/<db>-<UTC stamp>.sql` (gitignored, since it contains password hashes and messages). The file has plain INSERTs with original ids, in FK order (`DATA_TABLES` in `db/connect.js`).
+  - `npm run restore -- <file>` **refuses non-empty targets** and runs in one transaction.
+  - Merging into a populated DB was tested and found to attach profiles to the wrong users, which is why it's blocked.
+  - Verified: the round trip local → scratch DB gives byte-identical tables.
+
+## 8. Conventions & Commands
 
 - Client: `cd client && npm run dev` (Vite on :5173; proxies `/api` and `/socket.io` to :4000).
 - Server: `cd server && npm run dev` (nodemon on :4000); `npm run migrate`, `npm run seed`, `npm test`.
@@ -255,7 +283,7 @@ Enforcement:
 - `npm run seed` runs `db/seeds/*.sql` and then `db/seeds/sampleUsers.js`, which upserts 9 sample flatmates (`*@sample.flatmatefinder.dev`) for Browse/matching. They get random passwords (they can't be logged into), and their move-in dates are set relative to today.
 - `README.md` is the public portfolio README. Keep its API tables and roadmap checkboxes in sync when endpoints or phases change. Screenshots go in `docs/screenshots/`.
 
-## 8. Roadmap
+## 9. Roadmap
 
 Status (2026-11-18): all phases 1–8 done. Phase 8 = mobile nav, contrast fixes, skip link, page titles, 404, error boundary, axe audit.
 

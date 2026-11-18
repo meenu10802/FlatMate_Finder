@@ -13,7 +13,7 @@ smoking, pets, parties, cleanliness, budget, move-in date and location.
 ![Express](https://img.shields.io/badge/Express_5-14120f?style=flat-square&logo=express&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL_8-14120f?style=flat-square&logo=mysql&logoColor=white)
 
-[Features](#-features) · [Screenshots](#-screenshots) · [Getting started](#-getting-started) · [API](#-api-reference) · [Architecture](#-architecture) · [Roadmap](#-roadmap)
+[Features](#-features) · [Screenshots](#-screenshots) · [Getting started](#-getting-started) · [Deployment](#-deployment-free) · [API](#-api-reference) · [Architecture](#-architecture) · [Roadmap](#-roadmap)
 
 </div>
 
@@ -129,10 +129,62 @@ Open **http://localhost:5173**, create an account and complete the profile wizar
 | `server/` | `npm run migrate` | Apply pending SQL migrations |
 | `server/` | `npm run seed` | Seed locations and sample flatmates |
 | `server/` | `npm test` | Run the API test suite |
+| `server/` | `npm run backup` | Export every table to `server/backups/<db>-<timestamp>.sql` |
+| `server/` | `npm run restore -- <file>` | Restore a backup into a freshly migrated, empty database |
 | `client/` | `npm run dev` | Start the Vite dev server (proxies `/api` → `:4000`) |
 | `client/` | `npm run build` | Production build to `client/dist` |
 | `client/` | `npm run preview` | Preview the production build |
 | `client/` | `npm test` | Accessibility audit (axe-core) of every page + UX checks |
+| root | `npm run build` / `npm start` | Production build of everything / start the single production server |
+
+Any `server/` command can target another database with `ENV_FILE`, e.g. `ENV_FILE=.env.cloud npm run backup` reads `server/.env.cloud`.
+
+## ✦ Deployment (free)
+
+The live app runs on two free services:
+
+| Piece | Service | Notes |
+|---|---|---|
+| Database | **[TiDB Cloud Starter](https://tidbcloud.com)** | MySQL-compatible serverless database: free, doesn’t expire, TLS required. This is where all the data lives. The full API test suite passes against it (`ENV_FILE=.env.cloud npm test`). |
+| App | **[Render](https://render.com)** free web service | One Node process serves the API, Socket.IO **and** the built React app from the same origin, so the session cookie is first-party. |
+
+> **Sleep:** on the free plan the app sleeps after 15 minutes without visitors, and the next visit takes about a minute to wake it. **Data is never affected**: it lives in TiDB, not on Render.
+
+### 1. Create the database (TiDB Cloud)
+1. Sign up at [tidbcloud.com](https://tidbcloud.com) → **Create** → **Starter** (free). Pick region **AWS Singapore (ap-southeast-1)**.
+2. Open the instance → **Connect** → **Generate password**. Note the **host**, **port** (`4000`), **user** (looks like `xxxxxxxx.root`) and **password**.
+3. Create `server/.env.cloud` on your machine (it's gitignored). It's a copy of `.env` with the cloud values:
+   ```env
+   DB_HOST=gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+   DB_PORT=4000
+   DB_USER=xxxxxxxx.root
+   DB_PASSWORD=your-tidb-password
+   DB_NAME=flatmate_finder
+   DB_SSL=true
+   JWT_SECRET=anything-for-local-scripts
+   ```
+4. Create the tables and seed data in the cloud:
+   ```bash
+   cd server
+   ENV_FILE=.env.cloud npm run migrate
+   ENV_FILE=.env.cloud npm run seed
+   ```
+
+### 2. Deploy the app (Render)
+1. Sign up at [render.com](https://render.com) with GitHub.
+2. **New → Blueprint**, then pick this repository. Render reads [`render.yaml`](render.yaml).
+3. Fill in the values it asks for: `DB_HOST`, `DB_USER`, `DB_PASSWORD` (from TiDB), and `CLIENT_ORIGIN` (your Render URL, e.g. `https://flatmate-finder.onrender.com`). `JWT_SECRET` is generated automatically.
+4. **Apply**. Render runs `npm run build` (installs everything, builds the client) and `npm start`, then health-checks `/api/health`.
+
+Every push to `main` redeploys automatically.
+
+### 3. Keep the data safe
+- Your data lives in TiDB and survives sleeps, restarts and redeploys.
+- Take your own backup now and then (e.g. monthly), and keep the file somewhere private:
+  ```bash
+  cd server && ENV_FILE=.env.cloud npm run backup
+  ```
+- To restore: run `npm run migrate` (not `seed`) on an empty database, then `npm run restore -- backups/<file>.sql`. The restore is all-or-nothing and refuses to touch a database that already has data.
 
 ## ✦ API reference
 

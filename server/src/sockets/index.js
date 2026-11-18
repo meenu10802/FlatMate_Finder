@@ -75,20 +75,15 @@ export async function initSockets(httpServer) {
     }
   };
 
-  io.on('connection', async (socket) => {
+  io.on('connection', (socket) => {
     const { userId } = socket.data;
     socket.join(`user:${userId}`);
     const count = (onlineCounts.get(userId) ?? 0) + 1;
     onlineCounts.set(userId, count);
 
-    try {
-      const peers = await acceptedPeerIds(userId);
-      socket.emit('presence:list', peers.filter(isOnline));
-      if (count === 1) await broadcastPresence(userId, true);
-    } catch (err) {
-      console.error('presence init failed', err);
-    }
-
+    // IMPORTANT: register every event handler synchronously, BEFORE any await.
+    // Socket.IO drops events that arrive before their handler exists; with a remote DB (TiDB ~300 ms/query)
+    // awaiting presence queries first meant a message sent right after connecting was silently lost.
     const allowSend = rateLimiter();
 
     socket.on('message:send', handler(sendSchema, async ({ connectionId, body }) => {
@@ -113,6 +108,17 @@ export async function initSockets(httpServer) {
         console.error('presence broadcast failed', err);
       }
     });
+
+    // Presence work (DB queries) only after all handlers are in place.
+    (async () => {
+      try {
+        const peers = await acceptedPeerIds(userId);
+        if (socket.connected) socket.emit('presence:list', peers.filter(isOnline));
+        if (count === 1) await broadcastPresence(userId, true);
+      } catch (err) {
+        console.error('presence init failed', err);
+      }
+    })();
   });
 
   return io;

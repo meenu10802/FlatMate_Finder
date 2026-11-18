@@ -43,12 +43,13 @@ function openSocket(user) {
   sockets.push(s);
   return s;
 }
-const once = (s, event, ms = 3000) =>
+const once = (s, event, ms = 10000) => // generous: the cloud DB (TiDB) is ~300 ms per query
   new Promise((resolve, reject) => {
     const t = setTimeout(() => reject(new Error(`timeout waiting for ${event}`)), ms);
     s.once(event, (d) => { clearTimeout(t); resolve(d); });
   });
-const emitAck = (s, event, payload) => new Promise((resolve) => s.emit(event, payload, resolve));
+// Times out instead of hanging forever if the server never acks (e.g. an event dropped before its handler existed).
+const emitAck = (s, event, payload) => s.timeout(10000).emitWithAck(event, payload);
 
 before(async () => {
   try { await pool.query('SELECT 1 FROM messages LIMIT 1'); } catch { dbUp = false; return; }
@@ -61,7 +62,7 @@ before(async () => {
 
 after(async () => {
   sockets.forEach((s) => s.close());
-  await new Promise((r) => setTimeout(r, 300)); // let server-side disconnect handlers finish before closing the pool
+  await new Promise((r) => setTimeout(r, 2000)); // let server-side disconnect/presence handlers finish (slow on a remote DB) before closing the pool
   if (created.length) await query(`DELETE FROM users WHERE id IN (${created.map(() => '?').join(',')})`, created);
   server?.close();
   await pool.end();
@@ -147,4 +148,20 @@ test('sockets reject connections without a valid session', async (t) => {
   sockets.push(s);
   const err = await once(s, 'connect_error');
   assert.equal(err.message, 'UNAUTHENTICATED');
+});
+
+test('a message sent the instant the socket connects is not dropped (handlers registered before async work)', async (t) => {
+  if (!dbUp) return t.skip('database not available');
+  const a = await makeUser('Quick');
+  const b = await makeUser('Reply');
+  const cid = (await api(a, 'POST', '/connections', { addresseeId: b.id })).body.connection.id;
+  await api(b, 'PATCH', `/connections/${cid}`, { status: 'accepted' });
+
+  const s = connect(origin, { extraHeaders: { cookie: a.cookie }, transports: ['websocket'], forceNew: true });
+  sockets.push(s);
+  await once(s, 'connect');
+  // No waiting for presence:list — send immediately, while the server is still doing presence queries.
+  const ack = await emitAck(s, 'message:send', { connectionId: cid, body: 'first!' });
+  assert.equal(ack.ok, true);
+  assert.equal(ack.data.body, 'first!');
 });

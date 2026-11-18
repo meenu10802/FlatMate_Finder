@@ -1,0 +1,32 @@
+# Render Blueprint — one free web service serving the API, Socket.IO and the built React app.
+# Data lives in TiDB Cloud (MySQL-compatible), so it survives sleeps, restarts and redeploys.
+# Deploy: Render dashboard → New → Blueprint → pick this repo → fill in the values marked "sync: false".
+services:
+  - type: web
+    name: flatmate-finder
+    runtime: node
+    plan: free
+    region: singapore # closest Render region to India; create the TiDB instance in AWS Singapore (ap-southeast-1) too
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_SSL
+        value: "true"
+      - key: DB_PORT
+        value: "4000"
+      - key: DB_NAME
+        value: flatmate_finder
+      - key: JWT_SECRET
+        generateValue: true # random, generated once and kept across deploys (changing it only logs everyone out)
+      - key: DB_HOST
+        sync: false # e.g. gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+      - key: DB_USER
+        sync: false # e.g. 3Ab1Cd2EfGh.root
+      - key: DB_PASSWORD
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false # your Render URL, e.g. https://flatmate-finder.onrender.com

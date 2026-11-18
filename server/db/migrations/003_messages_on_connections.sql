@@ -17,4 +17,8 @@ CREATE TABLE messages (
   KEY idx_messages_unread (connection_id, read_at, sender_id),
   CONSTRAINT fk_messages_connection FOREIGN KEY (connection_id) REFERENCES connections(id) ON DELETE CASCADE,
   CONSTRAINT fk_messages_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  -- Chat order, paging (`id < ?`) and "last message" (`MAX(id)`) rely on ids increasing with time.
+  -- TiDB (cloud DB) hands out AUTO_INCREMENT ids in per-node batches unless AUTO_ID_CACHE=1.
+  -- This is a TiDB-only comment option; MySQL ignores it. (Added for deployment; harmless on DBs that already ran 003.)
+  /*T![auto_id_cache] AUTO_ID_CACHE=1 */;

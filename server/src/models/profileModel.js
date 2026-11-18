@@ -67,14 +67,18 @@ const COLUMNS = {
   moveInDate: 'move_in_date',
 };
 
-/** Insert or fully replace the user's profile. `data` must be validated by profileSchema. */
+/**
+ * Insert or fully replace the user's profile. `data` must be validated by profileSchema.
+ * Uses `VALUES(col)` rather than the MySQL 8.0.19 row alias (`AS new … new.col`): TiDB (our cloud DB)
+ * parses the alias but never applies it (pingcap/tidb#70814). `VALUES()` works on both.
+ */
 export async function upsert(userId, data) {
   const keys = Object.keys(COLUMNS);
   const cols = keys.map((k) => COLUMNS[k]);
   const sql = `
     INSERT INTO profiles (user_id, ${cols.join(', ')})
-    VALUES (?, ${cols.map(() => '?').join(', ')}) AS new
-    ON DUPLICATE KEY UPDATE ${cols.map((c) => `${c} = new.${c}`).join(', ')}`;
+    VALUES (?, ${cols.map(() => '?').join(', ')})
+    ON DUPLICATE KEY UPDATE ${cols.map((c) => `${c} = VALUES(${c})`).join(', ')}`;
   await query(sql, [userId, ...keys.map((k) => data[k])]);
   return findByUserId(userId);
 }

@@ -1,0 +1,13 @@
+{
+  "name": "flatmate-finder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flatmate Finder — full-stack flatmate matching app (React + Express + MySQL). Deployment entry point.",
+  "scripts": {
+    "build": "npm ci --prefix server --omit=dev && npm ci --prefix client --include=dev && npm run build --prefix client",
+    "start": "node server/src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

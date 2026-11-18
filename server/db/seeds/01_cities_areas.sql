@@ -7,8 +7,8 @@ INSERT INTO cities (name, state, country, lat, lng) VALUES
   ('Bengaluru', 'Karnataka',   'India', 12.971600, 77.594600),
   ('Mumbai',    'Maharashtra', 'India', 19.076000, 72.877700),
   ('Pune',      'Maharashtra', 'India', 18.520400, 73.856700)
-AS new
-ON DUPLICATE KEY UPDATE state = new.state, lat = new.lat, lng = new.lng;
+-- VALUES(col), not a row alias: TiDB ignores `AS new` aliases (pingcap/tidb#70814).
+ON DUPLICATE KEY UPDATE state = VALUES(state), lat = VALUES(lat), lng = VALUES(lng);
 
 INSERT INTO areas (city_id, name, lat, lng)
 SELECT c.id, a.name, a.lat, a.lng FROM cities c JOIN (
