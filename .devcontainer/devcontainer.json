@@ -1,12 +1,13 @@
 {
   "name": "Claude Code Pro Environment",
   "image": "://microsoft.com",
+  "features": {
+    "ghcr.io/devcontainers/features/mysql:1": {}
+  },
   "postCreateCommand": "npm install -g @anthropic-ai/claude-code && mkdir -p ~/.claude && echo \"$CLAUDE_CREDENTIALS\" > ~/.claude/.credentials.json && chmod 600 ~/.claude/.credentials.json",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "anthropic.claude-code"
-      ]
+      "extensions": ["anthropic.claude-code"]
     }
   }
 }
