@@ -1,9 +1,10 @@
 import colors from 'tailwindcss/colors';
 
 /**
- * STRICT PALETTE — see CLAUDE.md §6.
- * `colors` is REPLACED (not extended): only monochrome + three status accents exist.
- * Status accents may only be used via src/lib/statusColor.js / StatusBadge.
+ * PALETTE — see CLAUDE.md §6.
+ * `colors` is REPLACED (not extended). Base = ink black, white, warm grays (`neutral` = stone)
+ * and the `sand` background family. Red/green/yellow exist only as `status-*` accents,
+ * used via src/lib/statusColor.js / StatusBadge.
  */
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -13,18 +14,40 @@ export default {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
-      black: colors.black,
+      black: '#14120f', // warm ink
       white: colors.white,
-      neutral: colors.neutral,
+      neutral: colors.stone,
+      sand: {
+        50: '#fbf8f2',
+        100: '#f4ecdf', // page background
+        200: '#eadfcc',
+        300: '#dccbb0',
+        400: '#c7b08c',
+      },
       status: {
-        ok: colors.emerald[500],
+        ok: colors.emerald[600],
         warn: colors.amber[500],
         bad: colors.red[500],
       },
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', '"Plus Jakarta Sans"', 'ui-sans-serif', 'sans-serif'],
+      },
+      boxShadow: {
+        card: '0 1px 0 rgba(20,18,15,0.04), 0 12px 32px -16px rgba(20,18,15,0.18)',
+        lift: '0 2px 0 rgba(20,18,15,0.04), 0 30px 60px -24px rgba(20,18,15,0.35)',
+      },
+      keyframes: {
+        marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
+        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
+        rise: { from: { opacity: 0, transform: 'translateY(12px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+      },
+      animation: {
+        marquee: 'marquee 45s linear infinite',
+        float: 'float 6s ease-in-out infinite',
+        rise: 'rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both',
       },
     },
   },

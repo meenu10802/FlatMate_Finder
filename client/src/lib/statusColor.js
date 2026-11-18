@@ -16,6 +16,13 @@ export const STATUS_DOTS = {
   neutral: 'bg-neutral-400',
 };
 
+export const STATUS_TEXT = {
+  ok: 'text-status-ok',
+  warn: 'text-status-warn',
+  bad: 'text-status-bad',
+  neutral: 'text-neutral-500',
+};
+
 // Maps any domain value to a tone.
 const VALUE_TONE = {
   // lifestyle preferences
@@ -31,6 +38,13 @@ const VALUE_TONE = {
   accepted: 'ok',
   pending: 'warn',
   declined: 'bad',
+  // presence (offline = neutral gray)
+  online: 'ok',
+  offline: 'neutral',
+  // password strength
+  good: 'ok',
+  medium: 'warn',
+  weak: 'bad',
 };
 
 export function toneFor(value) {

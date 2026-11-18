@@ -1,4 +1,14 @@
-import 'dotenv/config';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
+
+// server/.env always wins over machine-wide variables (e.g. a global DB_PASSWORD from another project),
+// and is found regardless of the directory the process was started from.
+dotenv.config({
+  path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.env'),
+  override: true,
+  quiet: true,
+});
 
 const required = ['DB_HOST', 'DB_USER', 'DB_NAME', 'JWT_SECRET'];
 for (const key of required) {

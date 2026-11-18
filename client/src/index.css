@@ -4,9 +4,90 @@
 
 @layer base {
   html {
-    @apply bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+    @apply bg-sand-100 text-black antialiased dark:bg-neutral-950 dark:text-neutral-100;
+  }
+  body {
+    @apply font-sans text-[15px] leading-relaxed;
+  }
+  ::selection {
+    @apply bg-black text-sand-100;
   }
   :focus-visible {
-    @apply outline-none ring-2 ring-black ring-offset-2 dark:ring-white dark:ring-offset-neutral-950;
+    @apply outline-none ring-2 ring-black ring-offset-2 ring-offset-sand-100 dark:ring-white dark:ring-offset-neutral-950;
+  }
+  /* Native date picker icon in grayscale */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: grayscale(1);
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  /* Bold grotesque headlines. */
+  .font-display {
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    font-optical-sizing: auto;
+  }
+  /* Emphasised word in a headline: thick underline in the current text colour. */
+  .font-display em {
+    font-style: normal;
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.12em;
+  }
+  .bg-dots {
+    background-image: radial-gradient(theme('colors.sand.300') 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+  .bg-dots-inverse {
+    background-image: radial-gradient(theme('colors.neutral.800') 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .mask-radial {
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* Film-grain overlay: add `grain` to a relatively positioned element. */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@layer components {
+  /* Range slider; set --fill (0–100%) inline for the filled track. */
+  .range {
+    @apply h-1.5 w-full cursor-pointer appearance-none rounded-full bg-transparent;
+    background: linear-gradient(to right, theme('colors.black') var(--fill, 0%), theme('colors.sand.300') var(--fill, 0%));
+  }
+  .dark .range {
+    background: linear-gradient(to right, theme('colors.white') var(--fill, 0%), theme('colors.neutral.800') var(--fill, 0%));
+  }
+  .range::-webkit-slider-thumb {
+    @apply h-6 w-6 appearance-none rounded-full border-2 border-black bg-white shadow-card transition-transform active:scale-110;
+  }
+  .range::-moz-range-thumb {
+    @apply h-5 w-5 rounded-full border-2 border-black bg-white;
+  }
+  .dark .range::-webkit-slider-thumb,
+  .dark .range::-moz-range-thumb {
+    @apply border-white bg-neutral-950;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
