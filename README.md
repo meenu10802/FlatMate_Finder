@@ -36,18 +36,9 @@ Flatmate Finder lets people build a lifestyle profile and get ranked against eve
 | 🤝 | **Connections** | Send a request from any profile; accept or decline from the Connections page — messaging unlocks only once accepted |
 | 💬 | **Real-time inbox** | Socket.IO chat with online/offline dots (green / gray), typing indicator, unread badges, “Seen” receipts, optimistic sending and history paging |
 
-### Design system
-
-A deliberately restrained, editorial UI:
-
-- **Palette** — warm ink black, white, warm greys and a sand background. **Red, green and yellow are used only as small status accents** (e.g. green = match / allowed / flexible, yellow = occasionally / pending, red = strict no / conflict). This is enforced in `tailwind.config.js`, which *replaces* Tailwind's colour palette, so off-palette classes simply don't compile.
-- **Type** — Bricolage Grotesque ExtraBold for headlines, Plus Jakarta Sans for UI.
-- **Accessibility** — WCAG AA text contrast (measured; status badges use darker “ink” shades of each hue), skip link, per-page titles, keyboard focus rings, reduced-motion support, ARIA roles on every custom control, and an automated **axe-core** audit of every page (`npm test` in `/client`).
-- **Details** — grayscale person photos, film-grain black sections, a mobile menu with unread/request badges, a 404 page and an error boundary.
 
 ## ✦ Screenshots
 
-> _Replace these placeholders with your own captures — save them in [`docs/screenshots/`](docs/screenshots) using the file names below._
 
 | Landing page | Login page |
 |---|---|

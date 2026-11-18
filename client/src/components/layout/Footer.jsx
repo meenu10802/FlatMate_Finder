@@ -22,9 +22,6 @@ export default function Footer() {
           <Logo />
           <p className="mt-6 text-xs font-bold uppercase tracking-wider text-neutral-600">Designed &amp; built by</p>
           <p className="mt-1 font-display text-3xl tracking-tight sm:text-4xl">{AUTHOR.name}</p>
-          <p className="mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-            A full-stack portfolio project — React, Node.js/Express and MySQL.
-          </p>
         </div>
 
         <ul className="flex flex-wrap gap-3">
