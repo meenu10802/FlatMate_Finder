@@ -129,7 +129,8 @@ Open **http://localhost:5173**, create an account and complete the profile wizar
 | `server/` | `npm run migrate` | Apply pending SQL migrations |
 | `server/` | `npm run seed` | Seed locations and sample flatmates |
 | `server/` | `npm test` | Run the API test suite |
-| `server/` | `npm run backup` | Export every table to `server/backups/<db>-<timestamp>.sql` |
+| `server/` | `npm run backup` | Export every table of the local DB to `server/backups/<db>-<timestamp>.sql` |
+| `server/` | `npm run backup:cloud` | Same, for the cloud (TiDB) database in `server/.env.cloud` — works in any terminal |
 | `server/` | `npm run restore -- <file>` | Restore a backup into a freshly migrated, empty database |
 | `client/` | `npm run dev` | Start the Vite dev server (proxies `/api` → `:4000`) |
 | `client/` | `npm run build` | Production build to `client/dist` |
@@ -182,7 +183,8 @@ Every push to `main` redeploys automatically.
 - Your data lives in TiDB and survives sleeps, restarts and redeploys.
 - Take your own backup now and then (e.g. monthly), and keep the file somewhere private:
   ```bash
-  cd server && ENV_FILE=.env.cloud npm run backup
+  cd server
+  npm run backup:cloud        # works in PowerShell, Command Prompt and Git Bash
   ```
 - To restore: run `npm run migrate` (not `seed`) on an empty database, then `npm run restore -- backups/<file>.sql`. The restore is all-or-nothing and refuses to touch a database that already has data.
 

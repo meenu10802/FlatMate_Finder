@@ -10,7 +10,8 @@
     "seed": "node db/seed.js",
     "test": "node --test --test-concurrency=1",
     "backup": "node db/backup.js",
-    "restore": "node db/restore.js"
+    "restore": "node db/restore.js",
+    "backup:cloud": "node -e \"process.env.ENV_FILE='.env.cloud'; import('./db/backup.js')\""
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
