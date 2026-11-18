@@ -15,6 +15,8 @@ smoking, pets, parties, cleanliness, budget, move-in date and location.
 
 [Features](#-features) · [Screenshots](#-screenshots) · [Getting started](#-getting-started) · [Deployment](#-deployment-free) · [API](#-api-reference) · [Architecture](#-architecture) · [Roadmap](#-roadmap)
 
+📖 **Guides:** [How this project was built (learning guide)](docs/HOW_THIS_PROJECT_WAS_BUILT.md) · [New laptop setup & live-site health check](docs/NEW_LAPTOP_SETUP.md)
+
 </div>
 
 ---
