@@ -30,7 +30,7 @@ export default function OptionCards({ label, options, value, onChange, columns =
                 <span className="text-sm font-medium">{o.label}</span>
               </span>
               {o.desc && (
-                <span className={`mt-1.5 block text-xs leading-snug ${selected ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-500'}`}>
+                <span className={`mt-1.5 block text-xs leading-snug ${selected ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-600'}`}>
                   {o.desc}
                 </span>
               )}

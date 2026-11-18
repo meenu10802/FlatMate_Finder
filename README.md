@@ -42,7 +42,8 @@ A deliberately restrained, editorial UI:
 
 - **Palette** — warm ink black, white, warm greys and a sand background. **Red, green and yellow are used only as small status accents** (e.g. green = match / allowed / flexible, yellow = occasionally / pending, red = strict no / conflict). This is enforced in `tailwind.config.js`, which *replaces* Tailwind's colour palette, so off-palette classes simply don't compile.
 - **Type** — Bricolage Grotesque ExtraBold for headlines, Plus Jakarta Sans for UI.
-- **Details** — grayscale person photos, film-grain black sections, reduced-motion support, keyboard focus rings, and ARIA roles on custom controls.
+- **Accessibility** — WCAG AA text contrast (measured; status badges use darker “ink” shades of each hue), skip link, per-page titles, keyboard focus rings, reduced-motion support, ARIA roles on every custom control, and an automated **axe-core** audit of every page (`npm test` in `/client`).
+- **Details** — grayscale person photos, film-grain black sections, a mobile menu with unread/request badges, a 404 page and an error boundary.
 
 ## ✦ Screenshots
 
@@ -67,7 +68,7 @@ A deliberately restrained, editorial UI:
 | **Client** | React 18, Vite 5, Tailwind CSS 3, React Router 6, TanStack Query 5, axios, lucide-react |
 | **Server** | Node.js 20+, Express 5, mysql2 (pooled, parameterised SQL), zod 4, bcrypt, jsonwebtoken, express-rate-limit, Socket.IO |
 | **Database** | MySQL 8 (utf8mb4 / InnoDB), hand-written SQL migrations — no ORM |
-| **Testing** | Node's built-in test runner (`node --test`) |
+| **Testing** | Server: Node’s built-in test runner (`node --test`) against MySQL + live Socket.IO clients · Client: Vitest + jsdom + axe-core accessibility audit |
 
 ## ✦ Getting started
 
@@ -140,6 +141,7 @@ Open **http://localhost:5173**, create an account and complete the profile wizar
 | `client/` | `npm run dev` | Start the Vite dev server (proxies `/api` → `:4000`) |
 | `client/` | `npm run build` | Production build to `client/dist` |
 | `client/` | `npm run preview` | Preview the production build |
+| `client/` | `npm test` | Accessibility audit (axe-core) of every page + UX checks |
 
 ## ✦ API reference
 
@@ -363,7 +365,7 @@ Factors scoring ≥ 85% are a **match**, 35–85% **partial**, below 35% a **con
 - [x] **Phase 5** — Match score (0–100) on every card and a “How you match” breakdown on profiles
 - [x] **Phase 6** — Connection requests (connect, accept / decline)
 - [x] **Phase 7** — Real-time inbox over Socket.IO: presence dots, typing, unread badges, read receipts
-- [ ] **Phase 8** — Polish: mobile navigation, empty states, accessibility pass
+- [x] **Phase 8** — Polish: mobile menu, WCAG AA contrast fixes, skip link, page titles, 404 page, error boundary, axe-core audit
 
 ## ✦ Author
 

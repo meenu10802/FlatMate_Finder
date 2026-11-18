@@ -17,7 +17,7 @@ export default function Textarea({ label, error, hint, maxLength, value = '', cl
           {...props}
         />
         {maxLength && (
-          <span className="pointer-events-none absolute bottom-3 right-4 text-xs font-semibold text-neutral-400">
+          <span className="pointer-events-none absolute bottom-3 right-4 text-xs font-semibold text-neutral-600">
             {value.length}/{maxLength}
           </span>
         )}

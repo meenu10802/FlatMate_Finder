@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { SocketProvider } from './context/SocketContext.jsx';
 import PageShell from './components/layout/PageShell.jsx';
@@ -13,6 +13,7 @@ import ProfileView from './pages/ProfileView.jsx';
 import Browse from './pages/Browse.jsx';
 import Inbox from './pages/Inbox.jsx';
 import Connections from './pages/Connections.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
   return (
@@ -42,7 +43,7 @@ export default function App() {
             <Route path="/inbox/:connectionId" element={<Inbox />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
       </SocketProvider>

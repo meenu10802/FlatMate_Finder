@@ -21,7 +21,7 @@ export default function Slider({ label, value, min, max, step = 1, onChange, for
         className="range mt-4"
         style={{ '--fill': `${pct}%` }}
       />
-      <div className="mt-2 flex justify-between text-xs font-semibold text-neutral-400">
+      <div className="mt-2 flex justify-between text-xs font-semibold text-neutral-600">
         <span>{minLabel ?? format(min)}</span>
         <span>{maxLabel ?? format(max)}</span>
       </div>

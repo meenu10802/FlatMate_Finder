@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { Navigate, useParams } from 'react-router-dom';
 import { useProfile } from '../api/profiles.js';
 import { useAuth } from '../hooks/useAuth.js';
@@ -9,6 +10,7 @@ export default function ProfileView() {
   const { userId } = useParams();
   const { user } = useAuth();
   const { data, isLoading, error, refetch } = useProfile(userId);
+  usePageTitle(data?.profile?.name ?? 'Profile');
 
   if (user && Number(userId) === user.id) return <Navigate to="/me" replace />;
   if (isLoading) return <ProfileSkeleton />;

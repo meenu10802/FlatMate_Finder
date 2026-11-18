@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { useParams } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import { useConversations } from '../api/conversations.js';
@@ -18,6 +19,7 @@ export default function Inbox() {
   const { connected } = useSocket();
   const active = conversations.data?.find((c) => c.connectionId === activeId);
   const totalUnread = conversations.data?.reduce((n, c) => n + c.unread, 0) ?? 0;
+  usePageTitle(`${totalUnread ? `(${totalUnread}) ` : ''}${active ? `${active.user.name} · ` : ''}Inbox`);
 
   if (conversations.isError) return <ErrorState message={conversations.error.message} onRetry={conversations.refetch} />;
 
@@ -61,7 +63,7 @@ function EmptyPane({ title, text }) {
         <MessageSquare size={22} />
       </span>
       <p className="mt-4 font-display text-3xl">{title}</p>
-      <p className="mt-2 max-w-xs text-sm text-neutral-500">{text}</p>
+      <p className="mt-2 max-w-xs text-sm text-neutral-600">{text}</p>
     </div>
   );
 }

@@ -195,6 +195,13 @@ Error shape: `{ error: { code, message, details? } }`.
 | Yellow (`status-warn` = amber-500) | `text-status-warn`, `bg-status-warn/10`, `border-status-warn/30` | Occasionally, Pending, Partial match |
 | Red (`status-bad` = red-500) | `text-status-bad`, `bg-status-bad/10`, `border-status-bad/30` | Strict No, Conflict, Declined |
 
+**Contrast rules (measured in Phase 8, WCAG AA 4.5:1):**
+- Status **text** uses the dark `-ink` shades (`status-ok-ink` emerald-800, `status-warn-ink` amber-800, `status-bad-ink` red-700), which reach 5.7–6.8:1 on the 10% tint. The bright base hues are only for dots, bars, tints and borders. Bright amber text on its tint was 1.99:1.
+- On black surfaces use `<StatusBadge onDark>`, which uses the `-glow` shades (≥ 6.7:1).
+- Gray text on light surfaces (sand or white) must be **`neutral-600` or darker**. `neutral-500` on sand is 4.09:1 and fails; `neutral-400` on white is 2.52:1. Use `neutral-500` only for icons, large display text or placeholders on white.
+- On black surfaces use `neutral-400` (7.4:1). `neutral-500` on black is 3.9:1 and fails.
+- No text under 12px. Small score rings show "74%"; only rings ≥ 110px show a "match" caption.
+
 Password strength uses the same tones: Weak = red, Medium = yellow, Good = green (`PasswordStrength.jsx`, `lib/passwordStrength.js`). Sign-up is blocked while the password is Weak.
 
 Enforcement:
@@ -229,6 +236,14 @@ Enforcement:
 - Client routing: `RequireAuth` (optionally `requireProfile`) and `GuestOnly` guards in `components/layout/RequireAuth.jsx`. Use `<Button as={Link}>` instead of nesting a button inside a link.
 - Form errors are shown in **neutral** text with a dark outline — never red (red is a status accent only).
 - Server tests: `server/test/*.test.js` with `node --test`.
+- Client tests: `cd client && npm test` (Vitest + jsdom). `src/test/a11y.test.jsx` renders the real `<App>` with the API (`api/client.js`) and `socket.io-client` mocked, and runs **axe-core** on every page and every wizard step. Contrast is checked separately, since jsdom has no layout. **New pages must be added to this audit.** When adding an API call used by an audited page, add a mock route in `ROUTES`.
+- Accessibility conventions:
+  - `PageShell` has a "Skip to content" link targeting `#content`, and an `ErrorBoundary` keyed by pathname.
+  - Every page calls `usePageTitle(...)`. Inbox prefixes the unread count, e.g. "(2) Inbox · Flatmate Finder".
+  - Custom controls use real roles: `role="radio"`/`radiogroup` for option cards, `aria-pressed` for pills, and `role="img"` + `aria-label` for the score ring and photo previews.
+  - Unknown routes render `NotFound` instead of redirecting.
+- Navbar: desktop links appear from `sm` up; below that a menu button (`aria-expanded`, `#mobile-menu`) opens a panel that closes on navigation, Escape or an outside click. A dot on the button means unread messages or pending requests.
+- React Router v7 future flags (`v7_startTransition`, `v7_relativeSplatPath`) are on in `main.jsx` and the tests.
 - **API JSON is camelCase** (`hasProfile`, `budgetMin`, `city: { id, name }`); DB columns are snake_case. Models (`toUser`, `toProfile`) do the mapping.
 - Profiles: `PUT /profiles/me` is a full upsert (`INSERT … AS new ON DUPLICATE KEY UPDATE`). The service checks that `areaId` belongs to `cityId`. Currency is INR (`lib/format.js`). Dates are `YYYY-MM-DD` strings (pool uses `dateStrings: true`); parse them with `parseISODate` to avoid UTC off-by-one errors.
 - `ProfileWizard` (4 steps: About → Where → How you live → Budget & timing) is used both for `/onboarding` (`mode="create"`) and `/me/edit` (`mode="edit"`). Option labels and descriptions live in `lib/constants.js`.
@@ -242,7 +257,7 @@ Enforcement:
 
 ## 8. Roadmap
 
-Status (2026-11-18): phases 1–7 done (incl. 4b filters + 5 match score). Remaining: 8 polish (mobile nav menu, empty states, a11y pass).
+Status (2026-11-18): all phases 1–8 done. Phase 8 = mobile nav, contrast fixes, skip link, page titles, 404, error boundary, axe audit.
 
 1. **Scaffold** — client (Vite + Tailwind with restricted palette), server (Express, db pool, error handler), migrations + seeds.
 2. **Auth** — register/login/logout, JWT cookie, AuthContext, protected routes.

@@ -68,7 +68,7 @@ export default function ChatWindow({ conversation }) {
         <PresenceAvatar name={other.name} src={other.avatarUrl} online={online} />
         <div className="min-w-0 flex-1">
           <Link to={`/profiles/${other.id}`} className="block truncate font-bold hover:underline">{other.name}</Link>
-          <p className="truncate text-xs text-neutral-500" aria-live="polite">
+          <p className="truncate text-xs text-neutral-600" aria-live="polite">
             {typing ? <span className="font-semibold text-black dark:text-white">typing…</span> : online ? 'Online' : 'Offline'}
             {other.location && <span> · {other.location}</span>}
           </p>
@@ -87,14 +87,14 @@ export default function ChatWindow({ conversation }) {
           </div>
         )}
 
-        {history.isLoading && <p className="py-10 text-center text-sm text-neutral-500">Loading messages…</p>}
+        {history.isLoading && <p className="py-10 text-center text-sm text-neutral-600">Loading messages…</p>}
         {history.isError && <p className="py-10 text-center text-sm text-neutral-600">{history.error.message}</p>}
 
         {!history.isLoading && messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center text-center">
             <PresenceAvatar name={other.name} src={other.avatarUrl} online={online} size="lg" />
             <p className="mt-4 font-display text-3xl">Say hello to {other.name.split(' ')[0]}.</p>
-            <p className="mt-2 max-w-xs text-sm text-neutral-500">You’re connected. Ask about the flat, move-in dates or set up a visit.</p>
+            <p className="mt-2 max-w-xs text-sm text-neutral-600">You’re connected. Ask about the flat, move-in dates or set up a visit.</p>
           </div>
         )}
 
@@ -109,7 +109,7 @@ export default function ChatWindow({ conversation }) {
                 {newDay && (
                   <li className="flex items-center gap-3 py-3" aria-hidden="true">
                     <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">{formatDayLabel(m.createdAt)}</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-600">{formatDayLabel(m.createdAt)}</span>
                     <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
                   </li>
                 )}
@@ -153,12 +153,12 @@ function MessageMeta({ m, mine, showStatus, onRetry, onDiscard }) {
       <p className="mt-1 flex items-center gap-2 text-xs font-semibold text-black dark:text-white">
         <AlertCircle size={12} /> {m.error || 'Not sent'}
         <button type="button" onClick={onRetry} className="underline underline-offset-2">Retry</button>
-        <button type="button" onClick={onDiscard} className="text-neutral-500 underline underline-offset-2">Discard</button>
+        <button type="button" onClick={onDiscard} className="text-neutral-600 underline underline-offset-2">Discard</button>
       </p>
     );
   }
   return (
-    <p className="mt-1 flex items-center gap-1 px-1 text-xs text-neutral-500">
+    <p className="mt-1 flex items-center gap-1 px-1 text-xs text-neutral-600">
       {formatClock(m.createdAt)}
       {mine && showStatus && (
         m.pending ? <><Clock size={11} aria-hidden="true" /> Sending</>
@@ -243,7 +243,7 @@ function Composer({ connectionId, onSend, sendTyping }) {
           <ArrowUp size={18} />
         </button>
       </div>
-      <p className="mt-1.5 flex justify-between px-2 text-xs text-neutral-500">
+      <p className="mt-1.5 flex justify-between px-2 text-xs text-neutral-600">
         <span className="hidden sm:inline">Enter to send · Shift + Enter for a new line</span>
         {text.length > MAX - 200 && <span className="font-semibold text-black dark:text-white">{text.length}/{MAX}</span>}
       </p>

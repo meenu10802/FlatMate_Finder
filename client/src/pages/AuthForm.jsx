@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
@@ -12,6 +13,7 @@ import DemoMatchCard from '../components/matches/DemoMatchCard.jsx';
 /** Shared form for Login and Register. */
 export default function AuthForm({ mode }) {
   const isRegister = mode === 'register';
+  usePageTitle(isRegister ? 'Create your account' : 'Log in');
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,7 +60,7 @@ export default function AuthForm({ mode }) {
             <>Good to see you <em>again</em>.</>
           )}
         </h1>
-        <p className="mt-4 text-neutral-500">
+        <p className="mt-4 text-neutral-600">
           {isRegister
             ? 'Create an account, then tell us how you live. Takes about two minutes.'
             : 'Log in to see your matches and messages.'}
@@ -84,7 +86,7 @@ export default function AuthForm({ mode }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="rounded-full p-1.5 text-neutral-500 hover:text-black dark:hover:text-white"
+                  className="rounded-full p-1.5 text-neutral-600 hover:text-black dark:hover:text-white"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                 >
@@ -106,7 +108,7 @@ export default function AuthForm({ mode }) {
             {!submitting && <ArrowRight size={18} className="transition-transform group-hover:translate-x-0.5" />}
           </Button>
 
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-600">
             {isRegister ? 'Already have an account? ' : 'New here? '}
             <Link to={isRegister ? '/login' : '/register'} className="font-medium text-black underline decoration-neutral-300 underline-offset-4 hover:decoration-black dark:text-white">
               {isRegister ? 'Log in' : 'Create an account'}

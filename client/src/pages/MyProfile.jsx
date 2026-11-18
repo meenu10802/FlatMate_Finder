@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, PenLine } from 'lucide-react';
 import { useMyProfile } from '../api/profiles.js';
@@ -6,6 +7,7 @@ import ProfileDetail, { ProfileSkeleton } from '../components/profile/ProfileDet
 import ErrorState from '../components/layout/ErrorState.jsx';
 
 export default function MyProfile() {
+  usePageTitle('Your profile');
   const { data: profile, isLoading, error, refetch } = useMyProfile();
   const justCreated = useLocation().state?.justCreated;
 

@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { Link } from 'react-router-dom';
 import { Check, MessageSquare, X } from 'lucide-react';
 import { useConnections, useRespondToConnection } from '../api/connections.js';
@@ -15,7 +16,7 @@ function Person({ user, online, children }) {
         {online === undefined ? <Avatar name={user.name} src={user.avatarUrl} /> : <PresenceAvatar name={user.name} src={user.avatarUrl} online={online} />}
         <span className="min-w-0">
           <span className="block truncate font-bold hover:underline">{user.name}{user.age ? `, ${user.age}` : ''}</span>
-          <span className="block truncate text-sm text-neutral-500">{[user.occupation, user.location].filter(Boolean).join(' · ')}</span>
+          <span className="block truncate text-sm text-neutral-600">{[user.occupation, user.location].filter(Boolean).join(' · ')}</span>
         </span>
       </Link>
       <div className="flex gap-2">{children}</div>
@@ -28,14 +29,15 @@ function Section({ title, count, empty, children }) {
     <section className="rounded-[28px] border border-neutral-200 bg-white shadow-card dark:border-neutral-800 dark:bg-neutral-900">
       <header className="flex items-center justify-between border-b border-neutral-200 px-5 py-4 dark:border-neutral-800">
         <h2 className="font-bold">{title}</h2>
-        <span className="text-sm text-neutral-500">{count}</span>
+        <span className="text-sm text-neutral-600">{count}</span>
       </header>
-      {count ? <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">{children}</ul> : <p className="px-5 py-8 text-sm text-neutral-500">{empty}</p>}
+      {count ? <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">{children}</ul> : <p className="px-5 py-8 text-sm text-neutral-600">{empty}</p>}
     </section>
   );
 }
 
 export default function Connections() {
+  usePageTitle('Connections');
   const { data, isLoading, error, refetch } = useConnections();
   const respond = useRespondToConnection();
   const { isOnline } = useSocket();
@@ -48,7 +50,7 @@ export default function Connections() {
       <h1 className="mt-3 font-display text-5xl sm:text-6xl">Connections</h1>
 
       {isLoading ? (
-        <p className="mt-10 text-neutral-500">Loading…</p>
+        <p className="mt-10 text-neutral-600">Loading…</p>
       ) : (
         <div className="mt-10 space-y-6">
           <Section title="Requests for you" count={data.incoming.length} empty="No pending requests.">

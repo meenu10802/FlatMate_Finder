@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SearchX, SlidersHorizontal, X } from 'lucide-react';
@@ -18,6 +19,7 @@ const clampRadius = (v) => Math.min(RADIUS.max, Math.max(RADIUS.min, v));
 
 /** All filters live in the URL so searches are shareable and survive refresh. */
 export default function Browse() {
+  usePageTitle('Browse flatmates');
   const [params, setParams] = useSearchParams();
   const me = useMyProfile();
   const [showFilters, setShowFilters] = useState(false);
@@ -96,7 +98,7 @@ export default function Browse() {
                 </>
               ) : 'Finding flatmates…'}
             </p>
-            {results.isFetching && data && <span className="text-xs font-semibold text-neutral-500">Updating…</span>}
+            {results.isFetching && data && <span className="text-xs font-semibold text-neutral-600">Updating…</span>}
           </div>
 
           {chips.length > 0 && (
@@ -124,7 +126,7 @@ export default function Browse() {
             <div className="grid gap-5 sm:grid-cols-2">{[0, 1, 2, 3].map((i) => <FlatmateCardSkeleton key={i} />)}</div>
           ) : data.flatmates.length === 0 ? (
             <div className="flex flex-col items-center rounded-[28px] border-2 border-dashed border-sand-300 px-6 py-16 text-center dark:border-neutral-800">
-              <SearchX size={32} className="text-neutral-500" />
+              <SearchX size={32} className="text-neutral-600" />
               <p className="mt-4 font-display text-3xl">No one fits all of that yet.</p>
               <p className="mt-2 max-w-sm text-neutral-600 dark:text-neutral-400">
                 {chips.length ? 'Try removing a filter or two.' : 'Try widening the radius or measuring from the city centre.'}

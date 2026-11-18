@@ -11,7 +11,7 @@ function Group({ title, hint, children }) {
     <fieldset>
       <legend className="flex w-full items-baseline justify-between">
         <Eyebrow>{title}</Eyebrow>
-        {hint && <span className="text-xs text-neutral-500">{hint}</span>}
+        {hint && <span className="text-xs text-neutral-600">{hint}</span>}
       </legend>
       <div className="mt-3 flex flex-wrap gap-2">{children}</div>
     </fieldset>

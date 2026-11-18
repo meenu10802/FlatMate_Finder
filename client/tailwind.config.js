@@ -24,10 +24,18 @@ export default {
         300: '#dccbb0',
         400: '#c7b08c',
       },
+      // Bright base = dots, bars, tints. `-ink` = TEXT on light surfaces (≥ 5.6:1 on its tint, WCAG AA).
+      // `-glow` = text on black surfaces (≥ 6.7:1). Measured in Phase 8; see CLAUDE.md §6.
       status: {
         ok: colors.emerald[600],
         warn: colors.amber[500],
         bad: colors.red[500],
+        'ok-ink': colors.emerald[800],
+        'warn-ink': colors.amber[800],
+        'bad-ink': colors.red[700],
+        'ok-glow': colors.emerald[400],
+        'warn-glow': colors.amber[400],
+        'bad-glow': colors.red[400],
       },
     },
     extend: {

@@ -1,3 +1,4 @@
+import { usePageTitle } from '../hooks/usePageTitle.js';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import Button from '../components/ui/Button.jsx';
@@ -24,6 +25,7 @@ const FACTORS = [
 ];
 
 export default function Landing() {
+  usePageTitle(null);
   return (
     <main>
       <Hero />
@@ -77,7 +79,7 @@ function Hero() {
               <div key={l} className="px-4 py-3 first:pl-0">
                 <dt className="sr-only">{l}</dt>
                 <dd className="font-display text-3xl">{v}</dd>
-                <dd className="text-xs font-bold uppercase tracking-wider text-neutral-500">{l}</dd>
+                <dd className="text-xs font-bold uppercase tracking-wider text-neutral-600">{l}</dd>
               </div>
             ))}
           </dl>
@@ -89,7 +91,7 @@ function Hero() {
               <Avatar name="Kabir Shah" size="md" />
               <div>
                 <p className="font-medium">Kabir, 29</p>
-                <p className="text-xs text-neutral-500">Indiranagar</p>
+                <p className="text-xs text-neutral-600">Indiranagar</p>
               </div>
             </div>
           </div>
@@ -143,17 +145,17 @@ function Factors() {
           <div key={f.name} className="bg-white p-6 transition-colors hover:bg-neutral-50 dark:bg-neutral-950 dark:hover:bg-neutral-900">
             <div className="flex items-baseline justify-between">
               <h3 className="font-medium">{f.name}</h3>
-              <span className="text-xs font-semibold text-neutral-400">{f.n} pts</span>
+              <span className="text-xs font-semibold text-neutral-600">{f.n} pts</span>
             </div>
-            <p className="mt-10 text-sm leading-relaxed text-neutral-500">{f.text}</p>
+            <p className="mt-10 text-sm leading-relaxed text-neutral-600">{f.text}</p>
           </div>
         ))}
         <div className="grain relative flex flex-col justify-between bg-black p-6 text-white">
           <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">Reading the breakdown</p>
           <div className="mt-6 flex flex-col items-start gap-2">
-            <StatusBadge value="match">Match</StatusBadge>
-            <StatusBadge value="partial">Partial</StatusBadge>
-            <StatusBadge value="conflict">Conflict</StatusBadge>
+            <StatusBadge value="match" onDark>Match</StatusBadge>
+            <StatusBadge value="partial" onDark>Partial</StatusBadge>
+            <StatusBadge value="conflict" onDark>Conflict</StatusBadge>
           </div>
         </div>
       </div>
@@ -200,7 +202,7 @@ function LocationSection() {
             <div className="absolute inset-y-0 left-0 w-1/4 rounded-full bg-black dark:bg-white" />
             <div className="absolute left-1/4 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-black bg-white dark:border-white dark:bg-neutral-950" />
           </div>
-          <div className="mt-2 flex justify-between text-xs font-semibold text-neutral-400">
+          <div className="mt-2 flex justify-between text-xs font-semibold text-neutral-600">
             <span>1 km</span><span>25 km</span>
           </div>
         </div>
@@ -221,7 +223,7 @@ function Steps() {
       <div className="mt-10 grid gap-10 md:grid-cols-3">
         {steps.map(([n, title, text]) => (
           <div key={n} className="border-t border-black pt-6 dark:border-white">
-            <span className="text-xs font-semibold text-neutral-500">{n}</span>
+            <span className="text-xs font-semibold text-neutral-600">{n}</span>
             <h3 className="mt-3 font-display text-3xl">{title}</h3>
             <p className="mt-3 text-neutral-600 dark:text-neutral-400">{text}</p>
           </div>

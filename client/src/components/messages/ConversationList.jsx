@@ -17,7 +17,7 @@ export default function ConversationList({ conversations, isLoading }) {
     <div className="flex h-full min-h-0 flex-col">
       <div className="border-b border-neutral-200 p-4 dark:border-neutral-800">
         <div className="relative">
-          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" />
+          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-600" />
           <input
             type="search"
             value={q}
@@ -40,9 +40,9 @@ export default function ConversationList({ conversations, isLoading }) {
 
         {!isLoading && conversations?.length === 0 && (
           <li className="flex flex-col items-center px-6 py-14 text-center">
-            <Users size={28} className="text-neutral-400" />
+            <Users size={28} className="text-neutral-500" />
             <p className="mt-3 font-bold">No conversations yet</p>
-            <p className="mt-1 text-sm text-neutral-500">Connect with someone from Browse — once they accept, you can chat here.</p>
+            <p className="mt-1 text-sm text-neutral-600">Connect with someone from Browse — once they accept, you can chat here.</p>
             <Button as={Link} to="/browse" variant="secondary" size="sm" className="mt-5">Browse flatmates</Button>
           </li>
         )}
@@ -71,12 +71,12 @@ export default function ConversationList({ conversations, isLoading }) {
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-2">
                     <span className={`truncate ${c.unread ? 'font-bold' : 'font-semibold'}`}>{c.user.name}</span>
-                    <span className={`shrink-0 text-xs ${c.unread ? 'font-bold text-black dark:text-white' : 'text-neutral-500'}`}>
+                    <span className={`shrink-0 text-xs ${c.unread ? 'font-bold text-black dark:text-white' : 'text-neutral-600'}`}>
                       {formatThreadTime(last?.createdAt ?? c.connectedAt)}
                     </span>
                   </span>
                   <span className="mt-0.5 flex items-center justify-between gap-2">
-                    <span className={`truncate text-sm ${typingNow ? 'italic text-neutral-600' : c.unread ? 'font-semibold text-neutral-900 dark:text-neutral-100' : 'text-neutral-500'}`}>
+                    <span className={`truncate text-sm ${typingNow ? 'italic text-neutral-600' : c.unread ? 'font-semibold text-neutral-900 dark:text-neutral-100' : 'text-neutral-600'}`}>
                       {preview}
                     </span>
                     <UnreadBadge count={c.unread} />
@@ -88,7 +88,7 @@ export default function ConversationList({ conversations, isLoading }) {
         })}
 
         {!isLoading && conversations?.length > 0 && shown.length === 0 && (
-          <li className="px-6 py-10 text-center text-sm text-neutral-500">No one matches “{q}”.</li>
+          <li className="px-6 py-10 text-center text-sm text-neutral-600">No one matches “{q}”.</li>
         )}
       </ul>
     </div>

@@ -177,7 +177,7 @@ export default function ProfileWizard({ mode = 'create', initial, onSaved }) {
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${
                       active || done
                         ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                        : 'border-neutral-300 text-neutral-400 dark:border-neutral-700'
+                        : 'border-neutral-300 text-neutral-500 dark:border-neutral-700'
                     }`}
                   >
                     {done ? <Check size={14} /> : String(i + 1).padStart(2, '0')}
@@ -196,7 +196,7 @@ export default function ProfileWizard({ mode = 'create', initial, onSaved }) {
         <header key={step.key} className="animate-rise">
           <Eyebrow>Step {stepIdx + 1} of {STEPS.length}</Eyebrow>
           <h2 className="mt-3 font-display text-4xl tracking-tight">{step.title}</h2>
-          <p className="mt-2 text-neutral-500">{step.blurb}</p>
+          <p className="mt-2 text-neutral-600">{step.blurb}</p>
         </header>
 
         <div key={`${step.key}-body`} className="mt-10 animate-rise">

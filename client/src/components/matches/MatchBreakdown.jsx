@@ -43,7 +43,7 @@ export default function MatchBreakdown({ match, name }) {
                 </span>
               </span>
               <span className="w-12 text-right text-sm font-bold tabular-nums">
-                {Number.isInteger(b.points) ? b.points : b.points.toFixed(1)}<span className="font-medium text-neutral-500">/{b.weight}</span>
+                {Number.isInteger(b.points) ? b.points : b.points.toFixed(1)}<span className="font-medium text-neutral-600">/{b.weight}</span>
               </span>
               <StatusBadge value={b.status}>{STATUS_LABEL[b.status]}</StatusBadge>
             </span>

@@ -23,7 +23,7 @@ export function CleanlinessMeter({ level }) {
         ))}
       </div>
       <span className="text-sm text-neutral-600 dark:text-neutral-400">
-        {CLEANLINESS_LABELS[level]} <span className="text-neutral-400">· {level}/5</span>
+        {CLEANLINESS_LABELS[level]} <span className="text-neutral-600">· {level}/5</span>
       </span>
     </div>
   );
@@ -44,13 +44,13 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false, matc
             <Eyebrow>{isOwn ? 'Your profile' : 'Flatmate profile'}</Eyebrow>
             <h1 className="mt-2 font-display text-5xl leading-none tracking-tight sm:text-6xl">
               {p.name}
-              {p.age && <span className="text-neutral-400">, {p.age}</span>}
+              {p.age && <span className="text-neutral-500">, {p.age}</span>}
             </h1>
             <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-neutral-400">
               {p.occupation && <span>{p.occupation}</span>}
               {location && (
                 <span className="inline-flex items-center gap-1">
-                  <MapPin size={14} className="text-neutral-400" /> {location}
+                  <MapPin size={14} className="text-neutral-500" /> {location}
                 </span>
               )}
               {p.gender && p.gender !== 'Prefer not to say' && <span>{p.gender}</span>}
@@ -82,7 +82,7 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false, matc
                 <img src={p.roomPhotoUrl} alt={`The room ${p.name} is offering`} referrerPolicy="no-referrer"
                   className="aspect-[16/10] h-full w-full object-cover grayscale transition-[filter] duration-500 hover:grayscale-0" />
               ) : (
-                <div className="flex aspect-[16/10] items-center justify-center bg-sand-50 text-neutral-500 dark:bg-neutral-950">
+                <div className="flex aspect-[16/10] items-center justify-center bg-sand-50 text-neutral-600 dark:bg-neutral-950">
                   <BedDouble size={40} />
                 </div>
               )}
@@ -106,7 +106,7 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false, matc
           {p.bio ? (
             <p className="mt-4 whitespace-pre-line font-display text-2xl leading-snug sm:text-3xl">“{p.bio}”</p>
           ) : (
-            <p className="mt-4 text-neutral-500">{isOwn ? 'Add a short bio so people know who they’d be living with.' : 'No bio yet.'}</p>
+            <p className="mt-4 text-neutral-600">{isOwn ? 'Add a short bio so people know who they’d be living with.' : 'No bio yet.'}</p>
           )}
         </Panel>
 
@@ -117,7 +117,7 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false, matc
           </p>
           <p className="mt-6 font-display text-4xl leading-tight">
             {formatINR(p.budgetMin)}
-            <span className="block text-neutral-500">to {formatINR(p.budgetMax)}</span>
+            <span className="block text-neutral-400">to {formatINR(p.budgetMax)}</span>
           </p>
         </Panel>
 
@@ -129,16 +129,16 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false, matc
               const opt = optionFor(options, p[key]);
               return (
                 <div key={key} className="flex items-center justify-between gap-4 py-4">
-                  <dt className="text-sm text-neutral-500">{title}</dt>
+                  <dt className="text-sm text-neutral-600">{title}</dt>
                   <dd className="flex items-center gap-3">
-                    <span className="hidden text-sm text-neutral-500 sm:inline">{opt?.desc}</span>
+                    <span className="hidden text-sm text-neutral-600 sm:inline">{opt?.desc}</span>
                     <StatusBadge value={p[key]}>{opt?.label ?? p[key]}</StatusBadge>
                   </dd>
                 </div>
               );
             })}
             <div className="flex items-center justify-between gap-4 py-4">
-              <dt className="text-sm text-neutral-500">Cleanliness</dt>
+              <dt className="text-sm text-neutral-600">Cleanliness</dt>
               <dd><CleanlinessMeter level={p.cleanliness} /></dd>
             </div>
           </dl>
@@ -147,18 +147,18 @@ export default function ProfileDetail({ profile: p, actions, isOwn = false, matc
         {/* Move-in + area */}
         <div className="grid gap-6">
           <Panel>
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-500">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-600">
               <CalendarDays size={13} /> Move-in
             </p>
             <p className="mt-4 font-display text-4xl leading-none">{formatDate(p.moveInDate, { day: 'numeric', month: 'short' })}</p>
-            <p className="mt-2 text-sm text-neutral-500">{formatDate(p.moveInDate, { year: 'numeric' })} · {relativeDays(p.moveInDate)}</p>
+            <p className="mt-2 text-sm text-neutral-600">{formatDate(p.moveInDate, { year: 'numeric' })} · {relativeDays(p.moveInDate)}</p>
           </Panel>
           <Panel>
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-500">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-neutral-600">
               <Radius size={13} /> Search area
             </p>
             <p className="mt-4 font-display text-4xl leading-none">{p.searchRadiusKm} km</p>
-            <p className="mt-2 text-sm text-neutral-500">around {p.area?.name ?? `central ${p.city?.name ?? 'city'}`}</p>
+            <p className="mt-2 text-sm text-neutral-600">around {p.area?.name ?? `central ${p.city?.name ?? 'city'}`}</p>
           </Panel>
         </div>
       </div>

@@ -19,7 +19,7 @@ export default function FlatmateCard({ flatmate: f, originName }) {
           <Avatar name={f.name} src={f.avatarUrl} size="md" />
           <div className="min-w-0">
             <p className="truncate font-bold leading-tight">
-              {f.name}{f.age && <span className="font-medium text-neutral-500">, {f.age}</span>}
+              {f.name}{f.age && <span className="font-medium text-neutral-600">, {f.age}</span>}
             </p>
             {f.occupation && <p className="truncate text-sm text-neutral-600 dark:text-neutral-400">{f.occupation}</p>}
           </div>
@@ -29,12 +29,12 @@ export default function FlatmateCard({ flatmate: f, originName }) {
 
       <div className="mt-5 space-y-2 border-t border-dashed border-sand-300 pt-4 text-sm text-neutral-700 dark:border-neutral-800 dark:text-neutral-300">
         <p className="flex items-center gap-2" title={`${formatKm(f.distanceKm)} from ${originName}`}>
-          <MapPin size={14} className="shrink-0 text-neutral-500" />
+          <MapPin size={14} className="shrink-0 text-neutral-600" />
           <span className="font-bold text-black dark:text-white">{formatKm(f.distanceKm)}</span>
-          <span className="truncate text-neutral-500">· {f.distanceKm === 0 ? 'same area · ' : ''}{where}</span>
+          <span className="truncate text-neutral-600">· {f.distanceKm === 0 ? 'same area · ' : ''}{where}</span>
         </p>
-        <p className="flex items-center gap-2"><Wallet size={14} className="shrink-0 text-neutral-500" /> {formatINRShort(f.budgetMin)} – {formatINRShort(f.budgetMax)} / month</p>
-        <p className="flex items-center gap-2"><CalendarDays size={14} className="shrink-0 text-neutral-500" /> Moves in {formatDate(f.moveInDate, { day: 'numeric', month: 'short' })}</p>
+        <p className="flex items-center gap-2"><Wallet size={14} className="shrink-0 text-neutral-600" /> {formatINRShort(f.budgetMin)} – {formatINRShort(f.budgetMax)} / month</p>
+        <p className="flex items-center gap-2"><CalendarDays size={14} className="shrink-0 text-neutral-600" /> Moves in {formatDate(f.moveInDate, { day: 'numeric', month: 'short' })}</p>
         {f.hasRoom && <p className="flex items-center gap-2 font-semibold"><BedDouble size={14} className="shrink-0" /> Has a room to share</p>}
       </div>
 

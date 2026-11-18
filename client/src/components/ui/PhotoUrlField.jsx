@@ -37,7 +37,7 @@ export default function PhotoUrlField({ kind = 'person', value, onChange, error,
         label={
           <span className="flex items-center gap-2">
             {k.label}
-            {optional && <span className="text-xs font-medium text-neutral-500">Optional</span>}
+            {optional && <span className="text-xs font-medium text-neutral-600">Optional</span>}
           </span>
         }
         placeholder={k.placeholder}
@@ -50,7 +50,8 @@ export default function PhotoUrlField({ kind = 'person', value, onChange, error,
         className={`relative flex shrink-0 items-center justify-center overflow-hidden border-2 border-dashed border-sand-300 bg-sand-50 dark:border-neutral-700 dark:bg-neutral-950 ${k.frame} ${
           status === 'ok' ? 'border-solid border-black dark:border-white' : ''
         }`}
-        aria-label={`${k.label} preview`}
+        role="img"
+        aria-label={`${k.label} preview: ${status === 'ok' ? 'image loaded' : status === 'broken' ? 'image could not be loaded' : status === 'loading' ? 'loading' : 'no image yet'}`}
       >
         {value && looksLikeUrl(value) && status !== 'broken' && (
           <img
@@ -63,7 +64,7 @@ export default function PhotoUrlField({ kind = 'person', value, onChange, error,
           />
         )}
         {status !== 'ok' && (
-          <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-neutral-500">
+          <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-neutral-600">
             {status === 'broken' ? <ImageOff size={22} /> : <k.Icon size={24} />}
             {kind === 'room' && <span className="text-xs font-semibold">{status === 'broken' ? 'No image' : 'Preview'}</span>}
           </span>

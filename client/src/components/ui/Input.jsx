@@ -1,7 +1,7 @@
 import { forwardRef, useId } from 'react';
 
 export const fieldClass = (error) =>
-  `w-full rounded-2xl border bg-white px-4 text-[15px] text-neutral-900 placeholder:text-neutral-400 transition-colors focus:border-black focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:bg-neutral-950 dark:text-neutral-100 dark:focus:border-white dark:focus:ring-neutral-800 ${
+  `w-full rounded-2xl border bg-white px-4 text-[15px] text-neutral-900 placeholder:text-neutral-500 transition-colors focus:border-black focus:outline-none focus:ring-4 focus:ring-neutral-200 dark:bg-neutral-950 dark:text-neutral-100 dark:focus:border-white dark:focus:ring-neutral-800 ${
     error ? 'border-black dark:border-white' : 'border-neutral-300 hover:border-neutral-400 dark:border-neutral-700'
   }`;
 
@@ -16,7 +16,7 @@ export function Field({ label, error, hint, htmlFor, msgId, className = '', chil
       )}
       {children}
       {(error || hint) && (
-        <p id={msgId} className={`text-xs ${error ? 'font-medium text-black dark:text-white' : 'text-neutral-500'}`}>
+        <p id={msgId} className={`text-xs ${error ? 'font-medium text-black dark:text-white' : 'text-neutral-600'}`}>
           {error ? `↳ ${error}` : hint}
         </p>
       )}
@@ -33,7 +33,7 @@ const Input = forwardRef(function Input({ label, error, hint, className = '', id
     <Field label={label} error={error} hint={hint} htmlFor={inputId} msgId={msgId} className={className}>
       <div className="relative">
         {prefix && (
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-neutral-500">{prefix}</span>
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-semibold text-neutral-600">{prefix}</span>
         )}
         <input
           ref={ref}

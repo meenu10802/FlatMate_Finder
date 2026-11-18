@@ -49,7 +49,7 @@ export function AboutStep({ form, update, errors }) {
       </div>
 
       <div>
-        <Label aside={<span className="text-xs text-neutral-400">Optional</span>}>Gender</Label>
+        <Label aside={<span className="text-xs text-neutral-600">Optional</span>}>Gender</Label>
         <div className="flex flex-wrap gap-2">
           {GENDER_OPTIONS.map((g) => (
             <Pill key={g} active={form.gender === g} onClick={() => update({ gender: form.gender === g ? '' : g })}>
@@ -102,7 +102,7 @@ export function WhereStep({ form, update, errors }) {
         {cities.isLoading ? (
           <SkeletonPills />
         ) : cities.isError ? (
-          <p className="text-sm text-neutral-500">Couldn’t load cities. Is the API running?</p>
+          <p className="text-sm text-neutral-600">Couldn’t load cities. Is the API running?</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {cities.data.map((c) => (
@@ -118,7 +118,7 @@ export function WhereStep({ form, update, errors }) {
 
       {form.cityId && (
         <div className="animate-rise">
-          <Label aside={<span className="text-xs text-neutral-400">Pick your favourite</span>}>Neighbourhood</Label>
+          <Label aside={<span className="text-xs text-neutral-600">Pick your favourite</span>}>Neighbourhood</Label>
           {areas.isLoading ? (
             <SkeletonPills n={6} />
           ) : (
@@ -140,7 +140,7 @@ export function WhereStep({ form, update, errors }) {
       <div className="rounded-3xl border border-neutral-200 bg-sand-50 p-6 dark:border-neutral-800 dark:bg-neutral-950">
         <Slider label="How far would you go?" min={RADIUS.min} max={RADIUS.max}
           value={form.searchRadiusKm} onChange={(v) => update({ searchRadiusKm: v })} format={(v) => `${v} km`} />
-        <p className="mt-4 text-xs text-neutral-500">
+        <p className="mt-4 text-xs text-neutral-600">
           {form.areaId ? 'Measured from your chosen neighbourhood.' : 'Measured from the city centre.'}
         </p>
       </div>
@@ -238,8 +238,8 @@ export function BudgetStep({ form, update, errors }) {
         </div>
         {hasBudget && (
           <p className="mt-5 font-display text-3xl">
-            {formatINR(form.budgetMin)} <span className="text-neutral-400">–</span> {formatINR(form.budgetMax)}
-            <span className="ml-2 font-sans text-sm text-neutral-500">/ month</span>
+            {formatINR(form.budgetMin)} <span className="text-neutral-500">–</span> {formatINR(form.budgetMax)}
+            <span className="ml-2 font-sans text-sm text-neutral-600">/ month</span>
           </p>
         )}
       </div>
@@ -256,7 +256,7 @@ export function BudgetStep({ form, update, errors }) {
         <div className="grid items-end gap-4 sm:grid-cols-2">
           <Input type="date" label="Or pick a date" min={today}
             value={form.moveInDate} onChange={(e) => update({ moveInDate: e.target.value })} error={errors.moveInDate} />
-          {form.moveInDate && <p className="pb-3 font-display text-3xl text-neutral-500">{relativeDays(form.moveInDate)}</p>}
+          {form.moveInDate && <p className="pb-3 font-display text-3xl text-neutral-600">{relativeDays(form.moveInDate)}</p>}
         </div>
       </div>
     </div>

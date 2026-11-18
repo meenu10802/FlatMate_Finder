@@ -12,7 +12,7 @@ export default function DemoMatchCard({ className = '' }) {
           <Avatar name="Ananya Rao" size="md" />
           <div>
             <p className="font-medium leading-tight">Ananya, 26</p>
-            <p className="text-xs text-neutral-500">Product designer</p>
+            <p className="text-xs text-neutral-600">Product designer</p>
           </div>
         </div>
         <MatchScoreRing score={92} size={64} />
@@ -37,7 +37,7 @@ export default function DemoMatchCard({ className = '' }) {
 function Row({ icon: Icon, children }) {
   return (
     <p className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300">
-      <Icon size={14} className="text-neutral-400" /> {children}
+      <Icon size={14} className="text-neutral-500" /> {children}
     </p>
   );
 }
